@@ -64,6 +64,57 @@ public class UserDAO {
         }
     }
 
+    /**
+     * Creates a new user record within a provided connection/transaction.
+     *
+     * @param conn the active SQL Connection
+     * @param officialEmail the unique official email
+     * @param passwordHash the BCrypt password hash
+     * @param role the user role (e.g. EMPLOYEE)
+     * @param status the user status (e.g. ACTIVE)
+     * @return the created User with generated user_id and timestamps
+     * @throws SQLException if an error occurs during insert
+     */
+    public User createUser(Connection conn, String officialEmail, String passwordHash, String role, String status) throws SQLException {
+        String sql = "INSERT INTO users (official_email, password_hash, role, status) " +
+                     "VALUES (?, ?, ?, ?) " +
+                     "RETURNING user_id, official_email, password_hash, role, status, last_login, created_at, updated_at";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, officialEmail.trim().toLowerCase());
+            stmt.setString(2, passwordHash);
+            stmt.setString(3, role);
+            stmt.setString(4, status != null ? status : "ACTIVE");
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToUser(rs);
+                }
+            }
+        }
+        throw new SQLException("Failed to create user record; no rows returned.");
+    }
+
+    /**
+     * Checks if a user already exists with the given official email.
+     *
+     * @param email the email to check
+     * @return true if an account exists with this email, false otherwise
+     * @throws SQLException if a database access error occurs
+     */
+    public boolean existsByOfficialEmail(String email) throws SQLException {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        String sql = "SELECT 1 FROM users WHERE official_email = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, email.trim().toLowerCase());
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
     private User mapResultSetToUser(ResultSet rs) throws SQLException {
         Timestamp lastLoginTs = rs.getTimestamp("last_login");
         Timestamp createdAtTs = rs.getTimestamp("created_at");

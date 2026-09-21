@@ -20,10 +20,31 @@ import java.util.List;
 
 /**
  * Professional Admin Dashboard featuring real-time PostgreSQL database metrics,
- * recent employee overview table, pending actions summary, and sidebar navigation.
+ * recent employee overview table, pending actions summary, and sidebar
+ * navigation.
  */
 public class AdminDashboard extends JFrame {
 
+    private void handleNavigation(String itemName) {
+
+    if ("Employees".equalsIgnoreCase(itemName)) {
+
+        EmployeeManagement employeeManagement =
+                new EmployeeManagement();
+
+        employeeManagement.setVisible(true);
+
+        return;
+    }
+
+    JOptionPane.showMessageDialog(
+            this,
+            "The '" + itemName
+                    + "' module is scheduled for implementation in upcoming milestones.",
+            "Coming Soon",
+            JOptionPane.INFORMATION_MESSAGE
+    );
+}
     private static final List<String> ADMIN_NAV_ITEMS = Arrays.asList(
             "Dashboard",
             "Employees",
@@ -36,8 +57,7 @@ public class AdminDashboard extends JFrame {
             "Reports & Export",
             "Activity & History",
             "Account Settings",
-            "Logout"
-    );
+            "Logout");
 
     private final User user;
     private final DashboardService dashboardService;
@@ -81,8 +101,7 @@ public class AdminDashboard extends JFrame {
                     this,
                     "Access Denied: You do not possess administrator permissions.",
                     "Unauthorized Access",
-                    JOptionPane.ERROR_MESSAGE
-            );
+                    JOptionPane.ERROR_MESSAGE);
             SessionManager.getInstance().logout();
             dispose();
             SwingUtilities.invokeLater(() -> new LoginScreen().setVisible(true));
@@ -90,7 +109,7 @@ public class AdminDashboard extends JFrame {
     }
 
     private void initUI() {
-        setTitle("Admin Workspace - Employee Management System");
+        setTitle("Admin Dashboard - Employee Management System");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1120, 720);
         setMinimumSize(new Dimension(960, 600));
@@ -100,7 +119,13 @@ public class AdminDashboard extends JFrame {
         rootPanel.setBackground(UIConstants.COLOR_BACKGROUND);
 
         // 1. Sidebar Panel (Left)
-        SidebarPanel sidebar = new SidebarPanel(user, ADMIN_NAV_ITEMS, "Dashboard", this::performLogout);
+        SidebarPanel sidebar = new SidebarPanel(
+        user,
+        ADMIN_NAV_ITEMS,
+        "Dashboard",
+        this::performLogout,
+        this::handleNavigation
+);
         rootPanel.add(sidebar, BorderLayout.WEST);
 
         // 2. Main Area (TopBar + Content)
@@ -123,7 +148,8 @@ public class AdminDashboard extends JFrame {
 
         totalEmployeesCard = new StatCard("Total Employees", "...", "All registered staff", UIConstants.COLOR_PRIMARY);
         activeEmployeesCard = new StatCard("Active Employees", "...", "Currently working", UIConstants.COLOR_SUCCESS);
-        inactiveEmployeesCard = new StatCard("Inactive Employees", "...", "Deactivated/Archived", UIConstants.COLOR_WARNING);
+        inactiveEmployeesCard = new StatCard("Inactive Employees", "...", "Deactivated/Archived",
+                UIConstants.COLOR_WARNING);
         totalDepartmentsCard = new StatCard("Total Departments", "...", "Active divisions", UIConstants.COLOR_INFO);
 
         statsGrid.add(totalEmployeesCard);
@@ -165,8 +191,7 @@ public class AdminDashboard extends JFrame {
         panel.setBackground(UIConstants.COLOR_SURFACE);
         panel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(UIConstants.COLOR_BORDER, 1),
-                new EmptyBorder(18, 20, 18, 20)
-        ));
+                new EmptyBorder(18, 20, 18, 20)));
 
         // Panel Header
         JPanel header = new JPanel(new BorderLayout());
@@ -190,7 +215,7 @@ public class AdminDashboard extends JFrame {
         tableContainer.setBorder(new EmptyBorder(12, 0, 0, 0));
 
         // 1. Table View
-        String[] columns = {"ID", "Code", "Full Name", "Department", "Designation", "Joining Date", "Status"};
+        String[] columns = { "ID", "Code", "Full Name", "Department", "Designation", "Joining Date", "Status" };
         recentEmployeesTableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -255,8 +280,7 @@ public class AdminDashboard extends JFrame {
         panel.setPreferredSize(new Dimension(300, 300));
         panel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(UIConstants.COLOR_BORDER, 1),
-                new EmptyBorder(18, 20, 18, 20)
-        ));
+                new EmptyBorder(18, 20, 18, 20)));
 
         JLabel title = new JLabel("Pending Actions");
         title.setFont(UIConstants.FONT_SECTION);
@@ -283,7 +307,8 @@ public class AdminDashboard extends JFrame {
         emptyMsg.setForeground(UIConstants.COLOR_TEXT_MUTED);
         emptyMsg.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel emptyDetails = new JLabel("<html><div style='text-align:center;'>Document and profile requests will be listed here.</div></html>");
+        JLabel emptyDetails = new JLabel(
+                "<html><div style='text-align:center;'>Document and profile requests will be listed here.</div></html>");
         emptyDetails.setFont(UIConstants.FONT_SMALL);
         emptyDetails.setForeground(UIConstants.COLOR_TEXT_MUTED);
         emptyDetails.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -317,7 +342,8 @@ public class AdminDashboard extends JFrame {
     }
 
     private void updateUIWithStats(AdminDashboardStats stats) {
-        if (stats == null) return;
+        if (stats == null)
+            return;
 
         totalEmployeesCard.setValue(String.valueOf(stats.getTotalEmployees()));
         activeEmployeesCard.setValue(String.valueOf(stats.getActiveEmployees()));
@@ -331,7 +357,7 @@ public class AdminDashboard extends JFrame {
             tableCardLayout.show(tableContainer, "EMPTY");
         } else {
             for (RecentEmployeeDTO emp : recentList) {
-                recentEmployeesTableModel.addRow(new Object[]{
+                recentEmployeesTableModel.addRow(new Object[] {
                         emp.getEmployeeId(),
                         emp.getEmployeeCode(),
                         emp.getFullName(),
@@ -351,8 +377,7 @@ public class AdminDashboard extends JFrame {
                 "Are you sure you want to log out of your session?",
                 "Confirm Logout",
                 JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE
-        );
+                JOptionPane.QUESTION_MESSAGE);
 
         if (confirm == JOptionPane.YES_OPTION) {
             // 1. Clear in-memory session

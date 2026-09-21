@@ -17,10 +17,16 @@ import java.util.List;
 public class SidebarPanel extends JPanel {
 
     private final Runnable logoutAction;
+private final java.util.function.Consumer<String> navigationAction;
 
-    public SidebarPanel(User user, List<String> navItems, String activeItem, Runnable logoutAction) {
+    public SidebarPanel(
+        User user,
+        List<String> navItems,
+        String activeItem,
+        Runnable logoutAction,
+        java.util.function.Consumer<String> navigationAction) {
         this.logoutAction = logoutAction;
-
+        this.navigationAction = navigationAction;
         setLayout(new BorderLayout());
         setBackground(UIConstants.COLOR_SIDEBAR);
         setPreferredSize(new Dimension(240, 700));
@@ -128,7 +134,9 @@ public class SidebarPanel extends JPanel {
         add(bottomPanel, BorderLayout.SOUTH);
     }
 
-    private JPanel createNavItemPanel(String itemName, boolean isActive) {
+  private JPanel createNavItemPanel(
+        String itemName,
+        boolean isActive) {
         JPanel panel = new JPanel(new BorderLayout(8, 0));
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
         panel.setPreferredSize(new Dimension(216, 36));
@@ -177,16 +185,11 @@ public class SidebarPanel extends JPanel {
             }
 
             @Override
-            public void mouseClicked(MouseEvent e) {
-                if (!isActive) {
-                    JOptionPane.showMessageDialog(
-                            SidebarPanel.this,
-                            "The '" + itemName + "' module is scheduled for implementation in upcoming milestones.",
-                            "Coming Soon",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
-                }
-            }
+public void mouseClicked(MouseEvent e) {
+    if (!isActive && navigationAction != null) {
+        navigationAction.accept(itemName);
+    }
+}
         });
 
         return panel;
