@@ -26,7 +26,7 @@ class EmployeeProfileIntegrationTest {
     void setupAdminSession() {
         SessionManager session = SessionManager.getInstance();
         User adminUser = new User(1L, "admin@ems.com", "hash", "ADMIN", "ACTIVE", LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now());
-        session.createSession(adminUser);
+        session.login(adminUser);
     }
 
     @Test
@@ -118,7 +118,7 @@ class EmployeeProfileIntegrationTest {
 
         // Non-admin employee user
         User employeeUser = new User(99L, "emp@ems.com", "hash", "EMPLOYEE", "ACTIVE", null, null, null);
-        session.createSession(employeeUser);
+        session.login(employeeUser);
 
         assertThrows(IllegalStateException.class, () -> new EmployeeProfile(1L));
 
