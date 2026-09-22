@@ -1,5 +1,5 @@
 package com.ems.ui;
-import com.ems.model.*;import com.ems.service.DocumentService;import com.ems.session.SessionManager;import com.ems.ui.components.*;import javax.swing.*;import javax.swing.table.DefaultTableModel;import java.awt.*;import java.util.*;
+import com.ems.model.*;import com.ems.service.DocumentService;import com.ems.session.SessionManager;import com.ems.ui.components.*;import javax.swing.*;import javax.swing.table.DefaultTableModel;import java.awt.*;import java.util.Arrays;import java.util.List;
 public class MyDocuments extends JFrame{
  private final User user=SessionManager.getInstance().getCurrentUser();private final DocumentService service=new DocumentService();private final DefaultTableModel model=new DefaultTableModel(new Object[]{"Title","Type","Status","Uploaded","Rejection Reason"},0){public boolean isCellEditable(int r,int c){return false;}};private JLabel summary;
  public MyDocuments(){if(user==null||!SessionManager.getInstance().isLoggedIn()||!"EMPLOYEE".equalsIgnoreCase(user.getRole()))throw new IllegalStateException("Employee session required.");initUI();load();}
