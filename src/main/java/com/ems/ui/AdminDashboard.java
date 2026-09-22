@@ -28,12 +28,12 @@ public class AdminDashboard extends JFrame {
     private void handleNavigation(String itemName) {
 
     if ("Employees".equalsIgnoreCase(itemName)) {
+        new EmployeeManagement().setVisible(true);
+        return;
+    }
 
-        EmployeeManagement employeeManagement =
-                new EmployeeManagement();
-
-        employeeManagement.setVisible(true);
-
+    if ("Document Approvals".equalsIgnoreCase(itemName)) {
+        new DocumentApprovals().setVisible(true);
         return;
     }
 
