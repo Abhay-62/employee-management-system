@@ -69,3 +69,6 @@ out/
 Thumbs.db
 Desktop.ini
 $RECYCLE.BIN/
+
+# Private local employee document uploads
+data/employee-documents/
